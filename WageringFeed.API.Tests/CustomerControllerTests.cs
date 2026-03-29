@@ -24,7 +24,8 @@ public class CustomerControllerTests
 
         var result = await _controller.GetCustomerStats(99);
 
-        Assert.IsType<NotFoundResult>(result.Result);
+        var notFound = Assert.IsType<NotFoundObjectResult>(result.Result);
+        Assert.Equal("Customer Id not found", notFound.Value);
     }
 
     [Fact]

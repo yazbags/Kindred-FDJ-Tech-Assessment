@@ -4,7 +4,7 @@ ASP.NET Core 9 Web API that consumes a wagering WebSocket feed in the background
 
 ## Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download)
+- .NET 9 SDK
 
 ## How to run
 
@@ -32,12 +32,16 @@ With `ASPNETCORE_ENVIRONMENT=Development`, the app also serves:
 dotnet test
 ```
 
+Or run through Test Explorer in Visual Studio
+
 ## API overview
 
 | Method | Route | Description |
 |--------|--------|-------------|
 | GET | `/customer` | Lists customers available from the in-memory store (helper for testing). |
 | GET | `/customer/{customerId}/stats` | Returns aggregated stats for a customer, or `404` if customer doesn't exist in our store. |
+
+## Wagering Feed Consumer
 
 On startup, a hosted service (`WageringFeedConsumer`) connects to the configured WebSocket URL, receives feed messages, and dispatches them to typed handlers.
 
@@ -55,10 +59,6 @@ Scalar is only registered when `ASPNETCORE_ENVIRONMENT` is **Development** (the 
 
 ![Scalar – Wagering Feed API](image.png)
 
-## Wagering Feed Consumer
-
-WageringFeedConsumer.cs runs the background service for connecting to the WebSocket.
-
 ## Configuration
 
 Settings are read from `appsettings.json`, environment variables, and other standard ASP.NET Core configuration sources.
@@ -66,13 +66,6 @@ Settings are read from `appsettings.json`, environment variables, and other stan
 ### `WageringFeed` section
 
 Bound to `WageringFeedOptions` in code (`SectionName` = `"WageringFeed"`).
-
-| Key | Description |
-|-----|-------------|
-| `WebSocketBaseUrl` | Base WebSocket URL (without query string). The app appends `?candidateId={CandidateId}`. |
-| `CustomerApiBaseUrl` | Base URL for the HTTP customer API (e.g. `https://host`). Used to build `GET /customer?customerId=...&candidateId=...`. |
-| `CandidateId` | Identifier sent to both the WebSocket and customer API. |
-| `BufferSize` | Receive buffer size in bytes for each WebSocket read. |
 
 Example (`appsettings.json`):
 
@@ -105,5 +98,5 @@ Example (`appsettings.json`):
 - Store full messages to have event sourcing available to better replay events and debugging (if appropriate)
 - Add resilience to the websocket consumer and httpclient, reconnect and retries
 - Better test coverage and integration tests
-- Wouldn't keep ids directly in appsettings.json
+- CandidateId is included in appsettings.json for convenience during this exercise. This shouldn't normally be committed to source control, should be supplied via an environment variable or user secrets instead
 - Could look at using sealed classes and other small optimisation tweaks if needed

@@ -62,7 +62,6 @@ public class CustomerStoreTests
         Assert.Equal(10m, stats!.TotalStandToWin);
     }
 
-    // Two AddBet amounts for one customer; third value is expected total.
     public static TheoryData<decimal, decimal, decimal> TwoAddBetDecimalTotals => new()
     {
         { 4m, 6m, 10m },
